@@ -1,6 +1,4 @@
 import nodemailer from 'nodemailer'
-import fs from 'fs/promises'
-import path from 'path'
 
 export async function POST(req: Request) {
   try {
@@ -23,15 +21,7 @@ export async function POST(req: Request) {
     }
 
     const bytes = await resume.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    const uploadDir = path.join(process.cwd(), 'uploads')
-
-    await fs.mkdir(uploadDir, { recursive: true })
-
-    const filePath = path.join(uploadDir, resume.name)
-
-    await fs.writeFile(filePath, buffer)
+const buffer = Buffer.from(bytes)
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -60,11 +50,11 @@ export async function POST(req: Request) {
       `,
 
       attachments: [
-        {
-          filename: resume.name,
-          path: filePath,
-        },
-      ],
+  {
+    filename: resume.name,
+    content: buffer,
+  },
+],
     })
 
     return Response.json({ success: true })
