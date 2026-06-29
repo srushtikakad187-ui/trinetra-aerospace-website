@@ -187,12 +187,11 @@ export function CareerForm() {
           </label>
 
           <input
-            type="file"
-            name="resume"
-            accept=".pdf"
-            required
-            className="block w-full text-sm text-white"
-          />
+  type="file"
+  name="resume"
+  required
+  className="block w-full text-sm text-white"
+/>
         </div>
 
         <button
