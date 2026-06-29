@@ -193,6 +193,8 @@ export function CareerForm() {
           <input
   type="file"
   name="resume"
+  accept=".pdf,.doc,.docx,application/pdf"
+  required
   className="block w-full text-sm text-white"
 />
         </div>

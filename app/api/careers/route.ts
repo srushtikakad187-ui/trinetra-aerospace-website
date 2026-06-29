@@ -11,17 +11,35 @@ export async function POST(req: Request) {
     const linkedin = data.get('linkedin') as string
     const coverLetter = data.get('coverLetter') as string
 
-    const resume = data.get('resume') as File
+    const resume = data.get('resume')
 
-    if (!resume) {
-      return Response.json(
-        { error: 'Resume is required' },
-        { status: 400 }
-      )
-    }
+console.log('Resume:', resume)
 
-    const bytes = await resume.arrayBuffer()
-const buffer = Buffer.from(bytes)
+if (resume instanceof File) {
+  console.log('Resume name:', resume.name)
+  console.log('Resume size:', resume.size)
+  console.log('Resume type:', resume.type)
+}
+let attachments: {
+  filename: string
+  content: Buffer
+  contentType: string
+}[] = []
+
+if (resume instanceof File && resume.size > 0) {
+  console.log('File received:', resume.name)
+  console.log('File type:', resume.type)
+
+  const bytes = await resume.arrayBuffer()
+
+  attachments = [
+    {
+      filename: resume.name || 'resume.pdf',
+      content: Buffer.from(bytes),
+      contentType: resume.type || 'application/pdf',
+    },
+  ]
+}
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -30,6 +48,8 @@ const buffer = Buffer.from(bytes)
         pass: process.env.EMAIL_PASS,
       },
     })
+    console.log('Sending email...')
+console.log('Attachments count:', attachments.length)
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -49,21 +69,19 @@ const buffer = Buffer.from(bytes)
         <p>${coverLetter}</p>
       `,
 
-      attachments: [
-  {
-    filename: resume.name,
-    content: buffer,
-  },
-],
+      attachments: attachments,
     })
 
     return Response.json({ success: true })
   } catch (error) {
-    console.error(error)
+  console.error('CAREER FORM ERROR:', error)
 
-    return Response.json(
-      { error: 'Failed to submit application' },
-      { status: 500 }
-    )
-  }
+  return Response.json(
+    {
+      success: false,
+      error: String(error),
+    },
+    { status: 500 }
+  )
+}
 }
