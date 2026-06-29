@@ -9,16 +9,17 @@ export function CareerForm() {
   const [showSuccess, setShowSuccess] = useState(false)
 
   async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
-    e.preventDefault()
+  e: React.FormEvent<HTMLFormElement>
+) {
+  e.preventDefault()
 
-    const form = e.currentTarget
+  const form = e.currentTarget
 
-    setLoading(true)
+  setLoading(true)
 
-    const formData = new FormData(form)
+  const formData = new FormData(form)
 
+  try {
     const response = await fetch('/api/careers', {
       method: 'POST',
       body: formData,
@@ -37,8 +38,11 @@ export function CareerForm() {
     } else {
       alert('Something went wrong.')
     }
+  } catch (error) {
+    setLoading(false)
+    alert('Network error')
   }
-
+}
   return (
     <>
       <AnimatePresence>
@@ -189,7 +193,6 @@ export function CareerForm() {
           <input
   type="file"
   name="resume"
-  required
   className="block w-full text-sm text-white"
 />
         </div>
