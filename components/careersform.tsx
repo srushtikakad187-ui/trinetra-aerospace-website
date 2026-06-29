@@ -18,6 +18,13 @@ export function CareerForm() {
   setLoading(true)
 
   const formData = new FormData(form)
+  const file = formData.get('resume')
+
+if (file instanceof File && file.size > 5 * 1024 * 1024) {
+  alert('Please upload a PDF smaller than 5 MB.')
+  setLoading(false)
+  return
+}
 
   try {
     const response = await fetch('/api/careers', {
@@ -193,7 +200,7 @@ export function CareerForm() {
           <input
   type="file"
   name="resume"
-  accept=".pdf,.doc,.docx,application/pdf"
+  accept=".pdf,application/pdf"
   required
   className="block w-full text-sm text-white"
 />

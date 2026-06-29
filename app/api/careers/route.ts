@@ -12,6 +12,12 @@ export async function POST(req: Request) {
     const coverLetter = data.get('coverLetter') as string
 
     const resume = data.get('resume')
+    if (resume instanceof File && resume.size > 5 * 1024 * 1024) {
+  return Response.json(
+    { error: 'Resume must be smaller than 5 MB' },
+    { status: 400 }
+  )
+}
 
 console.log('Resume:', resume)
 
@@ -26,7 +32,11 @@ let attachments: {
   contentType: string
 }[] = []
 
-if (resume instanceof File && resume.size > 0) {
+if (
+  resume instanceof File &&
+  resume.size > 0 &&
+  resume.size <= 5 * 1024 * 1024 // 5 MB
+) {
   console.log('File received:', resume.name)
   console.log('File type:', resume.type)
 
